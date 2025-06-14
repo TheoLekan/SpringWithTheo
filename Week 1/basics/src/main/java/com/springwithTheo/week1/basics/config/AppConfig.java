@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-@Lazy
 public class AppConfig {
 
     @Primary
@@ -20,7 +19,7 @@ public class AppConfig {
         return new VegPizza();
     }
 
-    @Bean
+    @Bean @Lazy
     public  Pizza meatPizza() {
         return new MeatPizza();
     }
@@ -29,6 +28,8 @@ public class AppConfig {
     public PizzaController pizzaController(@Qualifier("meatPizza") Pizza pizza) {
         return new PizzaController(pizza);
     }
+
+    @Lazy
     @Bean(name = "pizzaControllerWithVegPizza", initMethod = "init", destroyMethod = "destroy")
     public PizzaController pizzaController2(Pizza pizza) {
         return new PizzaController(pizza);
