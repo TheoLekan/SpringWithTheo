@@ -1,23 +1,24 @@
 package com.springwithTheo.week1.basics.web;
 
-import com.springwithTheo.week1.basics.service.VegPizza;
+import com.springwithTheo.week1.basics.service.Pizza;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PizzaController {
 
-    @Autowired
-    VegPizza vegPizza;
+
+    Pizza pizza;
 
     /* * Constructor-based dependency injection
      * This is the preferred way of injecting dependencies in Spring.
      * It allows for better testability and immutability.
      */
-   /* @Autowired
-    public PizzaController(VegPizza vegPizza) {
-        this.vegPizza = vegPizza;
-    }*/
+    @Autowired
+    public PizzaController(@Qualifier("meatPizza") Pizza vegPizza) {
+        this.pizza = vegPizza;
+    }
 
 
     /* * Setter-based dependency injection
@@ -29,9 +30,8 @@ public class PizzaController {
 //        this.vegPizza = vegPizza;
 //    }
 
-
     public String getPizza() {
-        return vegPizza.getPizza();
+        return pizza.getPizza();
     }
 
 
