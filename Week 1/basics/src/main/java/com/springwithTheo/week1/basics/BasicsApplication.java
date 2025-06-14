@@ -11,7 +11,7 @@ public class BasicsApplication {
 	public static void main(String[] args) {
 
 		ApplicationContext ctx = SpringApplication.run(BasicsApplication.class, args);
-		Controller bean = ctx.getBean(Controller.class);
+		Controller bean = ctx.getBean("greetingController", Controller.class);
 		System.out.println(bean.greeting());
 	}
 
