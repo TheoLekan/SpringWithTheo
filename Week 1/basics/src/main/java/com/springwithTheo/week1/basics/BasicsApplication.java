@@ -16,7 +16,7 @@ public class BasicsApplication {
 
 		// Get the VegPizza bean from the application context with method name "vegPizza".
 		//DefaultBeanName is the method name in the AppConfig class.
-		VegPizza vegPizza = ctx.getBean("vegPizza", VegPizza.class);
+		VegPizza vegPizza = ctx.getBean("vegPizzaThroughBeanName", VegPizza.class);
 		System.out.println(vegPizza.getPizza());
 	}
 
