@@ -2,7 +2,6 @@ package com.springwithTheo.week1.basics.web;
 
 import com.springwithTheo.week1.basics.service.Pizza;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,7 +15,7 @@ public class PizzaController {
      * It allows for better testability and immutability.
      */
     @Autowired
-    public PizzaController(@Qualifier("meatPizza") Pizza vegPizza) {
+    public PizzaController(Pizza vegPizza) {
         this.pizza = vegPizza;
     }
 
