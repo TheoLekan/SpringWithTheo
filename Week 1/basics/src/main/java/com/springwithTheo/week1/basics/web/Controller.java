@@ -3,7 +3,7 @@ package com.springwithTheo.week1.basics.web;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("greetingController")
 public class Controller {
 
     @GetMapping("/")
