@@ -1,4 +1,4 @@
-package com.springwithTheo.week1.basics.web;
+package com.springwithTheo.week1.basics.controller;
 
 import com.springwithTheo.week1.basics.service.Pizza;
 
@@ -31,5 +31,13 @@ public class PizzaController {
         return pizza.getPizza();
     }
 
+
+    public void init() {
+        System.out.println("PizzaController is initialized with " + pizza.getPizza());
+    }
+
+    public void destroy() {
+        System.out.println("PizzaController is destroyed");
+    }
 
 }

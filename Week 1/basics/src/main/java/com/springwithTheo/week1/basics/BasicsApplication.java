@@ -1,6 +1,6 @@
 package com.springwithTheo.week1.basics;
 
-import com.springwithTheo.week1.basics.web.PizzaController;
+import com.springwithTheo.week1.basics.controller.PizzaController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
