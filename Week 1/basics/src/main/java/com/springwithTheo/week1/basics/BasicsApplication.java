@@ -1,6 +1,6 @@
 package com.springwithTheo.week1.basics;
 
-import com.springwithTheo.week1.basics.web.Controller;
+import com.springwithTheo.week1.basics.web.PizzaController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -11,8 +11,8 @@ public class BasicsApplication {
 	public static void main(String[] args) {
 
 		ApplicationContext ctx = SpringApplication.run(BasicsApplication.class, args);
-		Controller bean = ctx.getBean("greetingController", Controller.class);
-		System.out.println(bean.greeting());
+		PizzaController bean = ctx.getBean( PizzaController.class);
+		System.out.println(bean.getPizza());
 	}
 
 }
