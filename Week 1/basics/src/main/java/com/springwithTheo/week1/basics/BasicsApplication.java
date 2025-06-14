@@ -1,6 +1,7 @@
 package com.springwithTheo.week1.basics;
 
 import com.springwithTheo.week1.basics.controller.MyController;
+import com.springwithTheo.week1.basics.lazy.LazyLoader;
 import com.springwithTheo.week1.basics.repository.MyRepository;
 import com.springwithTheo.week1.basics.service.MyService;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +38,9 @@ public class BasicsApplication {
 
 		MyRepository repository = ctx.getBean(MyRepository.class);
 		System.out.println(repository.hello());
+
+		LazyLoader lazyLoader = ctx.getBean(LazyLoader.class);
+		System.out.println("LazyLoader bean has been retrieved from the context.");
 	}
 
 }
