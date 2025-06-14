@@ -1,8 +1,5 @@
 package com.springwithTheo.week1.basics.service;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class VegPizza implements Pizza {
 
     @Override
