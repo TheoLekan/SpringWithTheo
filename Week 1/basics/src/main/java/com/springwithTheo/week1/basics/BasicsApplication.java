@@ -1,6 +1,7 @@
 package com.springwithTheo.week1.basics;
 
 import com.springwithTheo.week1.basics.controller.MyController;
+import com.springwithTheo.week1.basics.controller.PizzaController;
 import com.springwithTheo.week1.basics.lazy.LazyLoader;
 import com.springwithTheo.week1.basics.repository.MyRepository;
 import com.springwithTheo.week1.basics.service.MyService;
@@ -23,12 +24,12 @@ public class BasicsApplication {
 		//System.out.println(vegPizza.getPizza());
 
 		//Getting Controller with VegPizza
-		// PizzaController controllerWithVegPizza = ctx.getBean("pizzaControllerWithVegPizza",PizzaController.class);
-		// System.out.println(controllerWithVegPizza.getPizza());
+		 PizzaController controllerWithVegPizza = ctx.getBean("pizzaControllerWithVegPizza",PizzaController.class);
+		 System.out.println(controllerWithVegPizza.getPizza());
 
 		//Getting Controller with MeatPizza
-		//PizzaController controllerWithMeatPizza = ctx.getBean("pizzaControllerWithMeatPizza",PizzaController.class);
-		//System.out.println(controllerWithMeatPizza.getPizza());
+		PizzaController controllerWithMeatPizza = ctx.getBean("pizzaControllerWithMeatPizza",PizzaController.class);
+		System.out.println(controllerWithMeatPizza.getPizza());
 
 		MyController controller = ctx.getBean(MyController.class);
 		System.out.println(controller.hello());
