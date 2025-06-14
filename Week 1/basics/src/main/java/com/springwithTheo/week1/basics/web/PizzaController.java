@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PizzaController {
 
+    @Autowired
     VegPizza vegPizza;
 
     /* * Constructor-based dependency injection
@@ -23,10 +24,10 @@ public class PizzaController {
      * This is another way of injecting dependencies in Spring.
      * It allows for more flexibility, but is less preferred than constructor-based injection.
      */
-    @Autowired
-    public void setVegPizza(VegPizza vegPizza) {
-        this.vegPizza = vegPizza;
-    }
+//    @Autowired
+//    public void setVegPizza(VegPizza vegPizza) {
+//        this.vegPizza = vegPizza;
+//    }
 
 
     public String getPizza() {
