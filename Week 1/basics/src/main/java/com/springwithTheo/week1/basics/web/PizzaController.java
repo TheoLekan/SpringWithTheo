@@ -1,10 +1,8 @@
 package com.springwithTheo.week1.basics.web;
 
 import com.springwithTheo.week1.basics.service.Pizza;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class PizzaController {
 
 
@@ -14,7 +12,7 @@ public class PizzaController {
      * This is the preferred way of injecting dependencies in Spring.
      * It allows for better testability and immutability.
      */
-    @Autowired
+   // @Autowired
     public PizzaController(Pizza vegPizza) {
         this.pizza = vegPizza;
     }

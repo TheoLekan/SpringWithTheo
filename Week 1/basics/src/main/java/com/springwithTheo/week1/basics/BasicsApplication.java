@@ -1,6 +1,6 @@
 package com.springwithTheo.week1.basics;
 
-import com.springwithTheo.week1.basics.service.VegPizza;
+import com.springwithTheo.week1.basics.web.PizzaController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -16,8 +16,18 @@ public class BasicsApplication {
 
 		// Get the VegPizza bean from the application context with method name "vegPizza".
 		//DefaultBeanName is the method name in the AppConfig class.
-		VegPizza vegPizza = ctx.getBean("vegPizzaThroughBeanName", VegPizza.class);
-		System.out.println(vegPizza.getPizza());
+		//VegPizza vegPizza = ctx.getBean("vegPizzaThroughBeanName", VegPizza.class);
+		//System.out.println(vegPizza.getPizza());
+
+		//Getting Controller with VegPizza
+		PizzaController controllerWithVegPizza = ctx.getBean("pizzaControllerWithVegPizza",PizzaController.class);
+		System.out.println(controllerWithVegPizza.getPizza());
+
+		//Getting Controller with MeatPizza
+		PizzaController controllerWithMeatPizza = ctx.getBean("pizzaControllerWithMeatPizza",PizzaController.class);
+		System.out.println(controllerWithMeatPizza.getPizza());
+
+
 	}
 
 }
