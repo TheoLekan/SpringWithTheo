@@ -19,8 +19,9 @@ public class AppConfig {
         return new VegPizza();
     }
 
-    @Bean @Lazy
-    public  Pizza meatPizza() {
+    @Bean
+    @Lazy
+    public Pizza meatPizza() {
         return new MeatPizza();
     }
 
