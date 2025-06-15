@@ -12,7 +12,7 @@ public class PizzaController {
      * This is the preferred way of injecting dependencies in Spring.
      * It allows for better testability and immutability.
      */
-   // @Autowired
+    // @Autowired
     public PizzaController(Pizza vegPizza) {
         this.pizza = vegPizza;
     }
