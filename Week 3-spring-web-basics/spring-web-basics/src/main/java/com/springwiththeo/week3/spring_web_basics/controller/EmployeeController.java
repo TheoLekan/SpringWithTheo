@@ -2,7 +2,6 @@ package com.springwiththeo.week3.spring_web_basics.controller;
 
 import com.springwiththeo.week3.spring_web_basics.model.Employee;
 import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,12 +35,23 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee")
-    public Employee createEmployee(@PathParam("name") String name, @PathParam("position") String position) {
-        return employeeRepo.save(new Employee(name, position));
+    public Employee createEmployee(@RequestBody Employee employee) {
+        return employeeRepo.save(employee);
     }
 
     @DeleteMapping("/employee/{id}")
     public void deleteEmployee(@PathVariable("id") Long id) {
         employeeRepo.deleteById(id);
+    }
+
+    @PutMapping("/employee/{id}")
+    public Employee updateEmployee(@PathVariable("id") Long id, @RequestBody Employee updatedEmployee) {
+        return employeeRepo.findById(id)
+                .map(employee -> {
+                    employee.setName(updatedEmployee.getName());
+                    employee.setPosition(updatedEmployee.getPosition());
+                    return employeeRepo.save(employee);
+                })
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
     }
 }
