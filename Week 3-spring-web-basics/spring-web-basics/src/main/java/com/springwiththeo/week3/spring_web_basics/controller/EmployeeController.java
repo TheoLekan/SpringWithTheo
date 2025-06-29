@@ -3,6 +3,7 @@ package com.springwiththeo.week3.spring_web_basics.controller;
 import com.springwiththeo.week3.spring_web_basics.model.Employee;
 import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,31 +13,38 @@ public class EmployeeController {
     private final EmployeeRepo employeeRepo;
 
     @GetMapping("/employees")
-    public Iterable<Employee> allEmployees() {
-        return employeeRepo.findAll();
+    public ResponseEntity<Iterable<Employee>> allEmployees() {
+        return ResponseEntity.ok(employeeRepo.findAll());
     }
 
     @GetMapping("/employees/count")
-    public long countEmployees() {
-        return employeeRepo.count();
+    public ResponseEntity<Long> countEmployees() {
+        return ResponseEntity.ok(employeeRepo.count());
     }
 
     @GetMapping("/employees/positions")
-    public Iterable<String> allPositions() {
-        return employeeRepo.findAll().stream()
+    public ResponseEntity<Iterable<String>> allPositions() {
+
+        return ResponseEntity.ok(
+                employeeRepo.findAll().stream()
                 .map(Employee::getPosition)
                 .distinct()
-                .toList();
+                        .toList()
+        );
     }
 
     @GetMapping("/employee/{id}")
-    public Employee findEmployeeById(@PathVariable("id") Long id) {
-        return employeeRepo.findById(id).orElse(null);
+    public ResponseEntity<Employee> findEmployeeById(@PathVariable("id") Long id) {
+        return employeeRepo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @PostMapping("/employee")
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeRepo.save(employee);
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+        Employee savedEmployee = employeeRepo.save(employee);
+        return ResponseEntity.status(201).body(savedEmployee);
     }
 
     @DeleteMapping("/employee/{id}")
@@ -45,13 +53,13 @@ public class EmployeeController {
     }
 
     @PutMapping("/employee/{id}")
-    public Employee updateEmployee(@PathVariable("id") Long id, @RequestBody Employee updatedEmployee) {
+    public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long id, @RequestBody Employee updatedEmployee) {
         return employeeRepo.findById(id)
                 .map(employee -> {
                     employee.setName(updatedEmployee.getName());
                     employee.setPosition(updatedEmployee.getPosition());
-                    return employeeRepo.save(employee);
+                    return ResponseEntity.ok().body(employeeRepo.save(employee));
                 })
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
     }
 }
