@@ -18,9 +18,9 @@ public class LoadDatabase {
         return args -> {
             // Initialize the database with some sample data
             employeeRepo.saveAll(List.of(
-                    new Employee("John Doe", "Software Engineer"),
-                    new Employee("Jane Smith", "Project Manager"),
-                    new Employee("Alice Johnson", "Data Analyst")
+                    new Employee("John Doe", "Software Engineer","JohnDoe@gmail.com"),
+                    new Employee("Jane Smith", "Project Manager","JaneSmith@yahoo.com"),
+                    new Employee("Alice Johnson", "Data Analyst", "AliceJohnson@icloud.com")
             )).forEach(employee -> log.info("Preloading {}", employee));
         };
     }
