@@ -51,7 +51,9 @@ public class EmployeeController {
 
     @DeleteMapping("/employee/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
-
+        if (!employeeRepo.existsById(id)) {
+            throw new RuntimeException("Employee with ID " + id + " does not exist.");
+        }
         employeeRepo.deleteById(id);
         return ResponseEntity.noContent().build();
     }
