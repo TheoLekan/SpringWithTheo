@@ -2,6 +2,7 @@ package com.springwiththeo.week3.spring_web_basics.controller;
 
 import com.springwiththeo.week3.spring_web_basics.model.Employee;
 import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -43,7 +44,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee")
-    public ResponseEntity<Employee> createEmployee(@Validated @RequestBody Employee employee) {
+    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) {
         Employee savedEmployee = employeeRepo.save(employee);
         return ResponseEntity.status(201).body(savedEmployee);
     }
