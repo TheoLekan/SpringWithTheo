@@ -49,8 +49,10 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employee/{id}")
-    public void deleteEmployee(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
+
         employeeRepo.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/employee/{id}")
