@@ -2,6 +2,7 @@ package com.springwiththeo.week3.spring_web_basics.exception;
 
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,11 +28,19 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-
-
         body.put("errors", errors);
 
         return ResponseEntity.badRequest().body(body);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        // Handle runtime exceptions globally
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timeStamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
 }
