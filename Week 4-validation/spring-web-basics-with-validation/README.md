@@ -1,46 +1,52 @@
-# 🌐 Spring Web Basics – Week 3 Mini Project
+# 🛡️ Week 4 – Validation & Exception Handling
 
-This project is part of Week 3 of the **#SpringWithTheo** journey.  
-The goal: to explore how Spring Boot handles web requests using Spring MVC and to build a simple REST API from scratch.
+Welcome to Week 4 of the **#SpringWithTheo** challenge!  
+This week, I focused on making my Spring Boot REST API **more robust** by adding data validation and global exception handling.
 
 ---
 
-## 📌 What This Project Covers
+## 📌 What I Learned
 
-- `@RestController` and `@RequestMapping`
-- Handling:
-    - `GET`, `POST`, `DELETE` HTTP methods
-    - `@PathVariable`, `@RequestParam`, and `@RequestBody`
-- Returning responses via `ResponseEntity`
-- Auto-serialization of Java objects into JSON
-- Setting and reading custom values from `application.properties`
+✅ Using `@Valid` on DTOs to validate request bodies  
+✅ Applying Bean Validation constraints like `@NotBlank`, `@Email`, and `@Size`  
+✅ Building a global exception handler with `@ControllerAdvice`  
+✅ Handling `MethodArgumentNotValidException` to show field errors clearly  
+✅ Returning consistent, structured JSON error responses  
+✅ Adding helpful timestamps and error messages  
+✅ Using appropriate HTTP status codes (400 for validation, 404 for resource not found)  
+✅ Improving developer and client experience with clear errors
 
 ---
 
 ## 🧱 API Endpoints
 
-| Method | Path              | Description                |
-|--------|-------------------|----------------------------|
-| GET    | `/api/users`      | Returns a list of users    |
-| GET    | `/api/users/{id}` | Returns a user by ID       |
-| POST   | `/api/users`      | Creates a user (echo back) |
-| DELETE | `/api/users/{id}` | Deletes a user (mocked)    |
+| Method | Path             | Description                |
+|--------|------------------|----------------------------|
+| GET    | `/api/users`     | Returns a list of users    |
+| GET    | `/api/users/{id}`| Returns a user by ID       |
+| POST   | `/api/users`     | Creates a user             |
+| DELETE | `/api/users/{id}`| Deletes a user             |
 
 ---
 
 ## 📂 Folder Structure
 
 ```plaintext
-spring-web-basics/
+week4-validation-exceptions/
 ├── src/
-│   └── main/java/com/springwiththeo/week3/spring_web_basics/
-│       ├── UserApiApplication.java
+│   └── main/java/com/springwiththeo/week4/validation/
+│       ├── ValidationApplication.java
 │       ├── controller/
 │       │   └── UserController.java
 │       ├── model/
 │       │   └── User.java
-│       └── dto/
-│           └── CreateUserRequest.java
+│       ├── dto/
+│       │   └── UserRequest.java
+│       ├── exception/
+│       │   ├── GlobalExceptionHandler.java
+│       │   └── UserNotFoundException.java
+│       └── error/
+│           └── ApiErrorResponse.java
 ├── application.properties
 ├── pom.xml
 └── README.md
@@ -50,9 +56,15 @@ spring-web-basics/
 
 ## 🚀 Next Steps
 
-- Build and run the API
-- Test endpoints with Postman or curl
-- Experiment by adding new endpoints or custom error handling
+- Add even more advanced validations (e.g., cross-field)
+- Experiment with custom exception classes
+- Add tests for negative scenarios and error handling
+
+---
+
+## 🧠 Key Takeaway
+
+> *“A great API is not just about happy paths — it’s about failing gracefully.”*
 
 ---
 
@@ -61,15 +73,14 @@ spring-web-basics/
 Follow my progress and join the challenge:
 
 - LinkedIn: [theoolalekan](https://www.linkedin.com/in/theoolalekan/)
-- GitHub: [springwiththeo](https://github.com/TheoLekan/SpringWithTheo)
+- GitHub: [spring-with-theo](https://github.com/TheoLekan/SpringWithTheo)
 
 ---
 
 ## 💸 Accountability Challenge
 
-If I don’t post my update by **Sunday 11 PM GMT**, the first person to tag me with **#SpringWithTheo** and *
-*#NoPostNoPeace** wins **€50**.
+If I don’t post my update by **Sunday 11 PM GMT**, the first person to tag me with **#SpringWithTheo** and **#NoPostNoPeace** wins **€50**.
 
 ---
 
-Thanks for following along. Let’s grow together — one commit at a time.
+Thanks for following along — let’s keep building, one commit at a time. 💻🔥
