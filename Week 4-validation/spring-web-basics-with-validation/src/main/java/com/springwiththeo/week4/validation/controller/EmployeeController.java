@@ -1,7 +1,7 @@
-package com.springwiththeo.week3.spring_web_basics.controller;
+package com.springwiththeo.week4.validation.controller;
 
-import com.springwiththeo.week3.spring_web_basics.model.Employee;
-import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
+import com.springwiththeo.week4.validation.model.Employee;
+import com.springwiththeo.week4.validation.repository.EmployeeRepo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
-package com.springwiththeo.week3.spring_web_basics.configuration;
+package com.springwiththeo.week4.validation.configuration;
 
-import com.springwiththeo.week3.spring_web_basics.model.Employee;
-import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
+import com.springwiththeo.week4.validation.model.Employee;
+import com.springwiththeo.week4.validation.repository.EmployeeRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

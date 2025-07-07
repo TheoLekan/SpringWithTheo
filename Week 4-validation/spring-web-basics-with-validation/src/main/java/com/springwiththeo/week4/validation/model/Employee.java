@@ -1,4 +1,4 @@
-package com.springwiththeo.week3.spring_web_basics.model;
+package com.springwiththeo.week4.validation.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

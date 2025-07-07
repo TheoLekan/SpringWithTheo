@@ -1,4 +1,4 @@
-package com.springwiththeo.week3.spring_web_basics.exception;
+package com.springwiththeo.week4.validation.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
