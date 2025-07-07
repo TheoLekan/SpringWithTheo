@@ -5,26 +5,26 @@ import com.springwiththeo.week3.spring_web_basics.repository.EmployeeRepo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/employees")
 public class EmployeeController {
 
     private final EmployeeRepo employeeRepo;
 
-    @GetMapping("/employees")
+    @GetMapping()
     public ResponseEntity<Iterable<Employee>> allEmployees() {
         return ResponseEntity.ok(employeeRepo.findAll());
     }
 
-    @GetMapping("/employees/count")
+    @GetMapping("/count")
     public ResponseEntity<Long> countEmployees() {
         return ResponseEntity.ok(employeeRepo.count());
     }
 
-    @GetMapping("/employees/positions")
+    @GetMapping("/positions")
     public ResponseEntity<Iterable<String>> allPositions() {
 
         return ResponseEntity.ok(
@@ -35,7 +35,7 @@ public class EmployeeController {
         );
     }
 
-    @GetMapping("/employee/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Employee> findEmployeeById(@PathVariable("id") Long id) {
         return employeeRepo.findById(id)
                 .map(ResponseEntity::ok)
@@ -60,12 +60,14 @@ public class EmployeeController {
 
     @PutMapping("/employee/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long id, @RequestBody Employee updatedEmployee) {
+        if (!employeeRepo.existsById(id)) {
+            throw new RuntimeException("Employee with ID " + id + " does not exist.");
+        }
         return employeeRepo.findById(id)
                 .map(employee -> {
                     employee.setName(updatedEmployee.getName());
                     employee.setPosition(updatedEmployee.getPosition());
                     return ResponseEntity.ok().body(employeeRepo.save(employee));
-                })
-                .orElseGet(() -> ResponseEntity.unprocessableEntity().build());
+                }).get();
     }
 }

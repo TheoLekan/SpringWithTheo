@@ -20,12 +20,15 @@ This week, I focused on making my Spring Boot REST API **more robust** by adding
 
 ## 🧱 API Endpoints
 
-| Method | Path             | Description                |
-|--------|------------------|----------------------------|
-| GET    | `/api/users`     | Returns a list of users    |
-| GET    | `/api/users/{id}`| Returns a user by ID       |
-| POST   | `/api/users`     | Creates a user             |
-| DELETE | `/api/users/{id}`| Deletes a user             |
+| Method | Path                           | Description                 |
+|--------|--------------------------------|-----------------------------|
+| GET    | `/api/employees`  <br/>        | Returns a list of employees |
+| GET    | `/api/employees/{id}`          | Returns a user by ID        |
+| GET    | `/api/employees/count`         | Returns a user by ID        |
+| GET    | `/api/employees/positions`     | Returns a list of positions |
+| POST   | `/api/employees/employee`      | Creates a employee          |
+| PUT    | `/api/employees/employee/{id}` | Deletes a employee          |
+| DELETE | `/api/employees/employee/{id}` | Deletes a employee          |
 
 ---
 
@@ -35,18 +38,15 @@ This week, I focused on making my Spring Boot REST API **more robust** by adding
 week4-validation-exceptions/
 ├── src/
 │   └── main/java/com/springwiththeo/week4/validation/
+│       ├── configuration.java
+│       │   └── LoadDatabase.java
 │       ├── ValidationApplication.java
 │       ├── controller/
-│       │   └── UserController.java
+│       │   └── EmployeeController.java
 │       ├── model/
-│       │   └── User.java
-│       ├── dto/
-│       │   └── UserRequest.java
+│       │   └── Employee.java
 │       ├── exception/
 │       │   ├── GlobalExceptionHandler.java
-│       │   └── UserNotFoundException.java
-│       └── error/
-│           └── ApiErrorResponse.java
 ├── application.properties
 ├── pom.xml
 └── README.md
