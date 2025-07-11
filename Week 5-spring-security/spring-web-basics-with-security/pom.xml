@@ -11,7 +11,7 @@
     <groupId>com.springwiththeo.week5</groupId>
     <artifactId>spring-security-intro</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Spring Security demo]</name>
+    <name>Spring Security demo</name>
     <description>Demo project for Spring Boot</description>
     <url/>
     <licenses>
@@ -58,6 +58,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
 
