@@ -5,6 +5,7 @@ import com.springwiththeo.week5.securityBasics.repository.EmployeeRepo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,17 +15,20 @@ public class EmployeeController {
 
     private final EmployeeRepo employeeRepo;
 
-    @GetMapping()
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Iterable<Employee>> allEmployees() {
         return ResponseEntity.ok(employeeRepo.findAll());
     }
 
     @GetMapping("/count")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Long> countEmployees() {
         return ResponseEntity.ok(employeeRepo.count());
     }
 
     @GetMapping("/positions")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<Iterable<String>> allPositions() {
 
         return ResponseEntity.ok(
@@ -36,6 +40,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'MANAGER')")
     public ResponseEntity<Employee> findEmployeeById(@PathVariable("id") Long id) {
         return employeeRepo.findById(id)
                 .map(ResponseEntity::ok)
@@ -50,6 +55,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employee/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
         if (!employeeRepo.existsById(id)) {
             throw new RuntimeException("Employee with ID " + id + " does not exist.");
@@ -59,6 +65,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/employee/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'USER')")
     public ResponseEntity<Employee> updateEmployee(@PathVariable("id") Long id, @RequestBody Employee updatedEmployee) {
         if (!employeeRepo.existsById(id)) {
             throw new RuntimeException("Employee with ID " + id + " does not exist.");
