@@ -77,4 +77,20 @@ public class EmployeeController {
                     return ResponseEntity.ok().body(employeeRepo.save(employee));
                 }).get();
     }
+
+
+    @GetMapping("/admin/data")
+    public String adminOnly() {
+        return "Sensitive ADMIN data";
+    }
+
+    @GetMapping("/user/data")
+    public String managerAccess() {
+        return "General USER data";
+    }
+
+    @GetMapping("/manager/data")
+    public String userAccess() {
+        return "General MANAGER data";
+    }
 }

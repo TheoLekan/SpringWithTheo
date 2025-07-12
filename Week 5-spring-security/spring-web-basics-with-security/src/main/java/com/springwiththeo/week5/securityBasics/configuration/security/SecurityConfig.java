@@ -24,8 +24,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity in this example
-                .authorizeHttpRequests(auth ->
-                        auth.anyRequest().authenticated() // Require authentication for all requests
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/employees/admin/**").hasRole("ADMIN") // Only ADMIN can access /api/employees/admin/**
+                        .requestMatchers("/api/employees/manager/**").hasRole("MANAGER") // ADMIN and MANAGER can access /api/employees/manager/**
+                        .requestMatchers("/api/employees/user/**").hasRole("USER") // ADMIN and MANAGER can access /api/employees/manager/**
+                        .anyRequest().authenticated() // Require authentication for all requests
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults()); // Use HTTP Basic authentication
@@ -53,8 +56,13 @@ public class SecurityConfig {
                 .roles("MANAGER")
                 .build();
 
+        UserDetails user = User
+                .withUsername("user")
+                .password(passwordEncoder.encode("password"))
+                .roles("USER")
+                .build();
         // Create an in-memory manager details manager with the admin manager
-        return new InMemoryUserDetailsManager(admin, manager);
+        return new InMemoryUserDetailsManager(admin, manager, user);
     }
 
 
