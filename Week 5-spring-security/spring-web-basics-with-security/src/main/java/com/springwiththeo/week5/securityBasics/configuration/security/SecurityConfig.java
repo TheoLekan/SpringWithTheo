@@ -1,7 +1,10 @@
 package com.springwiththeo.week5.securityBasics.configuration.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,13 +18,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.HashMap;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, ObjectMapper mapper) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity in this example
                 .authorizeHttpRequests(auth -> auth
@@ -30,7 +36,48 @@ public class SecurityConfig {
                         .requestMatchers("/api/employees/user/**").hasRole("USER") // ADMIN and MANAGER can access /api/employees/manager/**
                         .anyRequest().authenticated() // Require authentication for all requests
                 )
-                .formLogin(Customizer.withDefaults())
+                .formLogin(form -> {
+                    form.loginPage("/login") // Custom login page
+                            .permitAll() // Allow all users to access the login page
+                            .successHandler((request, response, authentication) -> {
+                                System.out.println("User " + authentication.getName() + " logged in successfully");
+                                // Redirect to the admin page on successful login
+                                if (authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"))) {
+                                    response.sendRedirect("/api/employees/admin/data");
+                                } else if (authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_MANAGER"))) {
+                                    response.sendRedirect("/api/employees/manager/data");
+                                } else {
+                                    response.sendRedirect("/api/employees/user/data");
+                                }
+                                // Redirect to admin page on successful login
+                            })
+                            .failureHandler((request, response, exception) -> {
+                                System.out.println("Login failed: " + exception.getMessage());
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set the response status to 401 Unauthorized
+                                response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Set the response content type to plain text
+                                HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+                                stringObjectHashMap.put("error", exception.getMessage());
+                                response.getWriter().write(mapper.writeValueAsString(stringObjectHashMap)); // Write the error message to the response
+                            });
+                }).exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    System.out.println("Unauthorized access: " + authException.getMessage());
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set the response status to 401 Unauthorized
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);// Set the response content type to plain text
+                                    HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+                                    stringObjectHashMap.put("error", "Unauthorized access: " + authException.getMessage());
+                                    response.getWriter().write(mapper.writeValueAsString(stringObjectHashMap)); // Write the error message to the response
+                                })
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    System.out.println("Access denied: " + accessDeniedException.getMessage());
+                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN); // Set the response status to 403 Forbidden
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Set the response content type to plain text
+                                    HashMap<String, Object> stringObjectHashMap = new HashMap<>();
+                                    stringObjectHashMap.put("error", "Access denied: " + accessDeniedException.getMessage());
+                                    response.getWriter().write(mapper.writeValueAsString(stringObjectHashMap)); // Write the error message to the response
+                                }))
+                // Custom access denied page
                 .httpBasic(Customizer.withDefaults()); // Use HTTP Basic authentication
         // Configure security settings here
         return httpSecurity.build(); // Replace with actual security filter chain configuration
