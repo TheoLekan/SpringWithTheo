@@ -2,6 +2,7 @@ package com.springwiththeo.week5.securityBasics.configuration.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.util.HashMap;
 
@@ -24,6 +27,17 @@ import java.util.HashMap;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
+    private AuthenticationFailureHandler authencationFailureHandler;
+
+    @Autowired
+    public SecurityConfig(
+            AuthenticationSuccessHandler authenticationSuccessHandler,
+            AuthenticationFailureHandler authencationFailureHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authencationFailureHandler = authencationFailureHandler;
+    }
 
 
     @Bean
@@ -39,28 +53,10 @@ public class SecurityConfig {
                 .formLogin(form -> {
                     form.loginPage("/login") // Custom login page
                             .permitAll() // Allow all users to access the login page
-                            .successHandler((request, response, authentication) -> {
-                                System.out.println("User " + authentication.getName() + " logged in successfully");
-                                // Redirect to the admin page on successful login
-                                if (authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_ADMIN"))) {
-                                    response.sendRedirect("/api/employees/admin/data");
-                                } else if (authentication.getAuthorities().stream().anyMatch(s -> s.getAuthority().equals("ROLE_MANAGER"))) {
-                                    response.sendRedirect("/api/employees/manager/data");
-                                } else {
-                                    response.sendRedirect("/api/employees/user/data");
-                                }
-                                // Redirect to admin page on successful login
-                            })
-                            .failureHandler((request, response, exception) -> {
-                                System.out.println("Login failed: " + exception.getMessage());
-                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set the response status to 401 Unauthorized
-                                response.setContentType(MediaType.APPLICATION_JSON_VALUE); // Set the response content type to plain text
-                                HashMap<String, Object> stringObjectHashMap = new HashMap<>();
-                                stringObjectHashMap.put("error", exception.getMessage());
-                                response.getWriter().write(mapper.writeValueAsString(stringObjectHashMap)); // Write the error message to the response
-                            });
-                }).exceptionHandling(exceptionHandling ->
-                        exceptionHandling
+                            .successHandler(authenticationSuccessHandler)
+                            .failureHandler(authencationFailureHandler);
+                }).
+                exceptionHandling(exceptionHandling -> exceptionHandling
                                 .authenticationEntryPoint((request, response, authException) -> {
                                     System.out.println("Unauthorized access: " + authException.getMessage());
                                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Set the response status to 401 Unauthorized
