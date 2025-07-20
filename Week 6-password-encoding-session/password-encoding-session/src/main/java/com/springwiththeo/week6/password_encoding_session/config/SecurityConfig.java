@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,8 +29,14 @@ public class SecurityConfig implements CommandLineRunner {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(
-                        auth -> auth.anyRequest().authenticated()
+        return http
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity, not recommended for production
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers("/api/auth/register").permitAll()
+                                .requestMatchers("/api/hello").permitAll()
+                                .anyRequest().authenticated()
+
                 )
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
@@ -59,7 +66,7 @@ public class SecurityConfig implements CommandLineRunner {
         return new BCryptPasswordEncoder(strength);
     }
 
-    @Primary
+
     @Bean(name = "argonPasswordEncoder")
     PasswordEncoder argonPasswordEncoder() {
         return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
