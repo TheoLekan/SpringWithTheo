@@ -3,6 +3,7 @@ package com.springwiththeo.week6.password_encoding_session.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,8 +37,8 @@ public class SecurityConfig implements CommandLineRunner {
 
     }
 
-
     @Bean
+    @Primary
     public PasswordEncoder delegatingPasswordEncoder() {
         String idForEncode = "argon2"; // use argon2 for new passwords
 
@@ -49,21 +50,20 @@ public class SecurityConfig implements CommandLineRunner {
         return new DelegatingPasswordEncoder(idForEncode, encoders);
     }
 
-    /**
-     * Replaced the below with delegating password encoder
-     * This allows us to use multiple password encoders and specify which one to use for new passwords.
 
-    @Bean(name = "bcryptPasswordEncoder")
     PasswordEncoder bcryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    PasswordEncoder bcryptPasswordEncoder(int strength) {
+        return new BCryptPasswordEncoder(strength);
+    }
 
     @Primary
     @Bean(name = "argonPasswordEncoder")
     PasswordEncoder argonPasswordEncoder() {
         return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
-    }*/
+    }
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
@@ -80,14 +80,49 @@ public class SecurityConfig implements CommandLineRunner {
     }
 
 
+    private BCryptPasswordEncoder tunedPasswordEncoder(int timeInMillis) {
+        // This method is for demonstration purposes. In a real application, you would not use this.
+        // Instead, you would configure the PasswordEncoder in your security configuration.
+        String password = "password123"; // Example password to tune the encoder
+        int strength = 4; // Example strength, you can adjust this
+        while (passwordEncoderSpeed(new BCryptPasswordEncoder(strength), password) < timeInMillis) {
+            strength++;
+        }
+        return new BCryptPasswordEncoder(strength);
+    }
+
+    private long passwordEncoderSpeed(PasswordEncoder passwordEncoderToTune, String password) {
+        // This method is for demonstration purposes. In a real application, you would not use this.
+        // Instead, you would configure the PasswordEncoder in your security configuration.
+        long start = System.nanoTime();
+        passwordEncoderToTune.encode(password);
+        long end = System.nanoTime();
+        long duration = (end - start) / 1_000_000;
+        return duration;// Convert to milliseconds
+    }
+
     @Override
     public void run(String... args) throws Exception {
 
-        System.out.println(
-                // "Password for 'admin' user: " + userDetailsService(bcryptPasswordEncoder()).loadUserByUsername("admin").getPassword()
-        );
-        // System.out.println("This is admin user's hashed password rehashed: " + bcryptPasswordEncoder().encode(userDetailsService(bcryptPasswordEncoder()).loadUserByUsername("admin").getPassword()) + "\nNotice that that they're different, this is because this is a one way hashing algorithm, and it will always generate a different hash for the same password input. This is a security feature to prevent rainbow table attacks.");
+        long start = System.nanoTime();
+        String hashed = bcryptPasswordEncoder().encode("password123");
+        long end = System.nanoTime();
+        String duration = (end - start) / 1_000_000 + "ms"; // Convert to milliseconds
 
+
+        //Spring Security recommends tuning until password hashing takes ~1 second on your production hardware.
+
+        System.out.println("BCrypt Hash: " + hashed);
+        System.out.println("BCrypt Duration: " + duration);
+
+
+        BCryptPasswordEncoder tunedEncoder = tunedPasswordEncoder(1000);
+        start = System.nanoTime();
+        tunedEncoder.encode("password123");
+        end = System.nanoTime();
+        duration = (end - start) / 1_000_000 + "ms";
+        System.out.println("BCrypt Hash: " + hashed);
+        System.out.println("BCrypt Duration: " + duration);
 
     }
 }
