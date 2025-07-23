@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,7 @@ public class SecurityConfig implements CommandLineRunner {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler successHandler, AuthenticationFailureHandler failureHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity, not recommended for production
                 .authorizeHttpRequests(
@@ -38,7 +40,10 @@ public class SecurityConfig implements CommandLineRunner {
                                 .anyRequest().authenticated()
 
                 )
-                .formLogin(Customizer.withDefaults())
+                .formLogin(form->{
+                    form.successHandler(successHandler);
+                    form.failureHandler(failureHandler);
+                })
                 .httpBasic(Customizer.withDefaults())
                 .build();
 
