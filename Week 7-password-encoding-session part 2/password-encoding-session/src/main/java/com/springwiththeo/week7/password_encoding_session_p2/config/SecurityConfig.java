@@ -44,7 +44,6 @@ public class SecurityConfig implements CommandLineRunner {
                     form.successHandler(successHandler);
                     form.failureHandler(failureHandler);
                 })
-                .httpBasic(Customizer.withDefaults())
                 .build();
 
     }

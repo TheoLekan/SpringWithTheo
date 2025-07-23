@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -27,9 +29,10 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        Map<String, String> responseBody = Map.of(
-                "message", "Authentication failed for "+exception.getAuthenticationRequest().getName()
-        );
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "Authentication failed for "+exception.getAuthenticationRequest().getName());
+        responseBody.put("TimeStamp", LocalDateTime.now());
+
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }
