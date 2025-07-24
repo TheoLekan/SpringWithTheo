@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +35,7 @@ public class SecurityConfig implements CommandLineRunner {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler successHandler, AuthenticationFailureHandler failureHandler) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler successHandler, AuthenticationFailureHandler failureHandler, SessionRegistry sessionRegistry) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity, not recommended for production
                 .authorizeHttpRequests(
@@ -52,17 +55,23 @@ public class SecurityConfig implements CommandLineRunner {
                             response.setStatus(HttpServletResponse.SC_OK);
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.getWriter().write("{\"message\": \"Logout successful\"}");
+                            Arrays.stream(request.getCookies()).forEach(s -> sessionRegistry.removeSessionInformation(s.getValue()));
+
                         })
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"))
                 .sessionManagement(session -> {
-                    session.maximumSessions(1).maxSessionsPreventsLogin(false);
+                    session.maximumSessions(1).maxSessionsPreventsLogin(true);
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
                 })
                 .build();
 
     }
 
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
     @Bean
     @Primary
     public PasswordEncoder delegatingPasswordEncoder() {
