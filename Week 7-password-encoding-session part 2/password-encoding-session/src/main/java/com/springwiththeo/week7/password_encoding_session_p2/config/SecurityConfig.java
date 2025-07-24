@@ -1,9 +1,11 @@
 package com.springwiththeo.week7.password_encoding_session_p2.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -36,7 +38,7 @@ public class SecurityConfig implements CommandLineRunner {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/api/auth/register").permitAll()
-                                .requestMatchers("/api/hello").permitAll()
+                                //.requestMatchers("/api/hello").permitAll()
                                 .anyRequest().authenticated()
 
                 )
@@ -44,8 +46,17 @@ public class SecurityConfig implements CommandLineRunner {
                     form.successHandler(successHandler);
                     form.failureHandler(failureHandler);
                 })
+                .logout(logoutConfigurer -> logoutConfigurer
+
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.getWriter().write("{\"message\": \"Logout successful\"}");
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
                 .sessionManagement(session -> {
-                    session.maximumSessions(1).maxSessionsPreventsLogin(true);
+                    session.maximumSessions(1).maxSessionsPreventsLogin(false);
                     session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
                 })
                 .build();
