@@ -7,10 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,7 +28,8 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", "Authentication failed for "+exception.getAuthenticationRequest().getName());
+        responseBody.put("message", "Authentication failed for " + request.getParameter("username"));
+        responseBody.put("reason", exception.getMessage());
         responseBody.put("TimeStamp", LocalDateTime.now());
 
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
