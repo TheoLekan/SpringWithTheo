@@ -1,4 +1,4 @@
-# 🛡️ Week 6 – Secure Password Handling
+# 🛡️ Week 7 – Secure Password Handling
 
 This week, I explored how to safely store and manage user passwords using Spring Security.  
 The goal was to implement a realistic registration flow that:
