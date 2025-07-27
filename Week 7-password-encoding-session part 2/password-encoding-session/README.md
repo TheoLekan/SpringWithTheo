@@ -71,8 +71,12 @@ week6-password-encoding-session/
         │   └── SecurityConfig.java
         └── SpringWithTheoApplication.java
 ├── README.md
+└── NOTES.md
 ```
 
+## Additional Notes
+
+For detailed notes on what I learned this week about session management and JWT preparation, see [NOTES.md](./NOTES.md).
 ---
 
 ## 🔗 Follow the journey
