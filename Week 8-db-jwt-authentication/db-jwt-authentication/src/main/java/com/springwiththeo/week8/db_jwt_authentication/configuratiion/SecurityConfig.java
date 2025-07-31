@@ -47,6 +47,8 @@ public class SecurityConfig {
                 }
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for /admin/** endpoints
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // Allow
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .build();
