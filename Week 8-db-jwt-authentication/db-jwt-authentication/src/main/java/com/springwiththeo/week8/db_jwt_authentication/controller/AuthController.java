@@ -28,7 +28,7 @@ public class AuthController {
         );
 
         // Generate JWT token
-        return jwtService.generateToken(authenticate.getName());
+        return "Add this token in Bearer header to authenticate with Jwt: "+jwtService.generateToken(authenticate.getName());
 
     }
 
