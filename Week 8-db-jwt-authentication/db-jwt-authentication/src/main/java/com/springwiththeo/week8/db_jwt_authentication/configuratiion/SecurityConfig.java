@@ -1,6 +1,7 @@
 package com.springwiththeo.week8.db_jwt_authentication.configuratiion;
 
 import com.springwiththeo.week8.db_jwt_authentication.service.CustomerUserDetailsService;
+import com.springwiththeo.week8.db_jwt_authentication.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // Import necessary Spring Security classes
 @Configuration
@@ -39,17 +41,10 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,JwtAuthenticationFilter jwtFilter) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(form->{
-                    form.successHandler((request, response,authentication)->{
-                        response.setStatus(200);
-                        response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-                        response.getWriter().write("Login successful");
-                    });
-                }
-                )
+                .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for /admin/** endpoints
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // Allow
@@ -57,6 +52,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the UsernamePasswordAuthenticationFilter
                 .build();
 
     }
@@ -66,4 +62,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(); // Use BCrypt for password encoding
     }
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService, CustomerUserDetailsService userDetailsService) {
+        return new JwtAuthenticationFilter(jwtService, userDetailsService);
+    }
 }
