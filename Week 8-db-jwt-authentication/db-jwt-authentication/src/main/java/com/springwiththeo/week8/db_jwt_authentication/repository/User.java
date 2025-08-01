@@ -1,4 +1,4 @@
-package com.springwiththeo.week8.db_jwt_authentication;
+package com.springwiththeo.week8.db_jwt_authentication.repository;
 
 import jakarta.persistence.*;
 import lombok.Getter;

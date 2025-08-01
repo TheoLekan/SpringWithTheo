@@ -1,11 +1,11 @@
 package com.springwiththeo.week8.db_jwt_authentication;
 
+import com.springwiththeo.week8.db_jwt_authentication.repository.User;
 import com.springwiththeo.week8.db_jwt_authentication.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;

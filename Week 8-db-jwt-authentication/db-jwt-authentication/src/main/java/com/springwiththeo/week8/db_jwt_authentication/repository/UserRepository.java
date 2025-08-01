@@ -1,6 +1,5 @@
 package com.springwiththeo.week8.db_jwt_authentication.repository;
 
-import com.springwiththeo.week8.db_jwt_authentication.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,6 @@
 package com.springwiththeo.week8.db_jwt_authentication.service;
 
-import com.springwiththeo.week8.db_jwt_authentication.User;
+import com.springwiththeo.week8.db_jwt_authentication.repository.User;
 import com.springwiththeo.week8.db_jwt_authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
