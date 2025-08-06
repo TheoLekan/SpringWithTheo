@@ -1,0 +1,30 @@
+name: Learning Task
+description: Track a Spring With Theo learning task
+title: "[Week X] <Short Description>"
+labels: ["learning", "week-x"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Why this matters:**  
+        Describe the concept you’re learning and the problem you’re solving.
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Why are we doing this? What problem does this solve?
+      placeholder: e.g., We want to avoid DB lookups on every request by embedding roles into JWT.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What does success look like?
+      placeholder: |
+        - JwtService adds roles as claims to tokens
+        - JwtAuthenticationFilter extracts roles and populates SecurityContext
+        - Remove DB lookup in filter
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / References
+      description: Add links, videos, docs, or any helpful context.
