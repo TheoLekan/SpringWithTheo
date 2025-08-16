@@ -4,7 +4,9 @@ import com.springwiththeo.week8.db_jwt_authentication.repository.RefreshToken;
 import com.springwiththeo.week8.db_jwt_authentication.repository.RefreshTokenRepository;
 import com.springwiththeo.week8.db_jwt_authentication.repository.User;
 import com.springwiththeo.week8.db_jwt_authentication.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -83,6 +85,17 @@ public class RefreshTokenService {
     public void revokeToken(String token){
         refreshTokenRepository.findByToken(token)
                 .ifPresent(refreshTokenRepository::delete);
+    }
+
+    @Transactional
+    @Scheduled(fixedRate= 1000 * 60 * 60) // 1 hour
+    public void deleteExpiredTokens() {
+        Instant expiryDate = Instant.now();
+        int rowsDeleted = refreshTokenRepository.deleteByExpiryAtBefore(expiryDate);
+        if (rowsDeleted>0) {
+            System.out.println("Deleted " + rowsDeleted + " expired refresh tokens.");
+        }
+
     }
 }
 
