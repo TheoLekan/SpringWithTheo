@@ -4,7 +4,6 @@ import com.springwiththeo.week8.db_jwt_authentication.service.CustomerUserDetail
 import com.springwiththeo.week8.db_jwt_authentication.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -48,7 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Only allow ADMIN role for /admin/** endpoints
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // Allow
-                        .requestMatchers("/auth/login").permitAll() // Allow public access to the login endpoint
+                        .requestMatchers("/auth/login","/auth/refresh").permitAll() // Allow public access to the login endpoint
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
