@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
     private final Key key= Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long accessTokenExpirationTimeMs =  1000*60*15; // 15 minutes
+    private final long accessTokenExpirationTimeMs =  1000*15; // 15 seconds
 
     public String generateToken(String username) {
         return Jwts.builder()
@@ -31,8 +31,8 @@ public class JwtService {
 
     public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
         return Jwts.builder()
-                .setSubject(username)
                 .setClaims(Map.of("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet())))
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationTimeMs))
                 .signWith(key)
@@ -43,8 +43,8 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    public Set<String> extractRoles(String token) {
-        return extractAllClaims(token).get("roles", Set.class);
+    public List<String> extractRoles(String token) {
+        return extractAllClaims(token).get("roles", List.class);
     }
 
     private Claims extractAllClaims(String token) {

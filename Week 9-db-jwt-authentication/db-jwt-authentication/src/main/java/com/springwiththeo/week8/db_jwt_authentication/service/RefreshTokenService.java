@@ -3,6 +3,7 @@ package com.springwiththeo.week8.db_jwt_authentication.service;
 import com.springwiththeo.week8.db_jwt_authentication.repository.RefreshToken;
 import com.springwiththeo.week8.db_jwt_authentication.repository.RefreshTokenRepository;
 import com.springwiththeo.week8.db_jwt_authentication.repository.User;
+import com.springwiththeo.week8.db_jwt_authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import java.util.Base64;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-
+    private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final Duration refreshTokenValidity = Duration.ofDays(30);
@@ -36,6 +37,17 @@ public class RefreshTokenService {
     }
 
     private RefreshToken createRefreshToken(User user) {
+        String token = generateOpaqueToken();
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(token);
+        refreshToken.setUser(user);
+        refreshToken.setExpiryAt(Instant.now().plus(refreshTokenValidity));
+        return refreshTokenRepository.save(refreshToken);
+    }
+    public RefreshToken createRefreshToken(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
         String token = generateOpaqueToken();
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken(token);
