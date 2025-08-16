@@ -8,7 +8,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "refresh_tokens", indexes = {
         @Index(name = "idx_rt_token", columnList = "token", unique = true),
-        @Index(name = "idx_rt_user",  columnList = "user_id")
+        @Index(name = "idx_rt_user",  columnList = "user_id"),
+        @Index(name = "idx_rt_expiry", columnList = "expiryAt")
 })
 @Data
 public class RefreshToken {
