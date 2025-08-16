@@ -1,80 +1,65 @@
-# 🔐 Week 8 – Database-Backed Users + JWT Authentication
+# 🔄 Week 9 – Implementing Refresh Tokens with Spring Security + JWT
 
-This week, I upgraded my Spring Security setup from session-based auth to **JWT-based stateless authentication** — a huge step toward building production-ready APIs.
+This week, I built **refresh token support** into the authentication system so users can stay logged in without re-entering credentials while keeping sessions secure.
 
-The goal:
-- **Authenticate users from a database** using `DaoAuthenticationProvider`
-- **Issue JWT tokens** on login instead of sessions
-- **Validate tokens** on every request using a custom filter
-- **Go fully stateless** (no redirects, no form login)
+---
+
+## 🎯 Goal
+In real-world apps, JWT access tokens should be short-lived for security, but logging in every 15 minutes is a terrible user experience.  
+The **refresh token pattern** solves this by issuing a second, longer-lived token that can request new access tokens without asking for the username/password again.
 
 ---
 
 ## ✅ What I Implemented
 
-### 1. **Database-Backed Authentication**
-- Configured `DaoAuthenticationProvider` to use `CustomUserDetailsService` and `PasswordEncoder` for verifying credentials against the DB.
-
-### 2. **JWT Utility**
-- Built `JwtService` to:
-    - Generate signed tokens with `HS256`.
-    - Extract usernames from tokens.
-    - Validate tokens (signature + expiry).
-
-### 3. **Login Endpoint**
-- Created `/auth/login`:
-    - Accepts username & password.
-    - Authenticates via `AuthenticationManager`.
-    - Returns a signed JWT.
-
-### 4. **Custom JWT Filter**
-- Built `JwtAuthenticationFilter` (extends `OncePerRequestFilter`):
-    - Extracts `Authorization: Bearer <token>` header.
-    - Validates token using `JwtService`.
-    - Loads user details and sets the `SecurityContext`.
-
-### 5. **Stateless Security Config**
-- Disabled form login & CSRF.
-- Set `SessionCreationPolicy.STATELESS`.
-- Added `JwtAuthenticationFilter` **before** `UsernamePasswordAuthenticationFilter`.
+### 🗄 1. Refresh Token Repository & Entity
+- Created a `RefreshToken` JPA entity with:
+  - `id` (UUID)
+  - `token` (securely generated string)
+  - `user` (relation to `User` entity)
+  - `expiryDate`
+- Added `RefreshTokenRepository` for CRUD operations.
 
 ---
 
-## 🧰 Technologies Used
-- Spring Boot
-- Spring Security
-- JJWT (io.jsonwebtoken)
-- BCryptPasswordEncoder
-- DaoAuthenticationProvider
-- In-memory & database-backed UserDetails
+### ⚙ 2. Refresh Token Service
+- Handles:
+  - Generating refresh tokens for users
+  - Validating token expiry
+  - Rotating (invalidating and issuing a new one)
+- Replaces old tokens to prevent reuse.
 
 ---
 
-## 📁 Folder Structure
-```
-week8-db-jwt-auth/
-├── configuration/
-│   ├── SecurityConfig.java
-│   └── JwtAuthenticationFilter.java
-├── controller/
-│   └── AuthController.java
-│   └── TestController.java
-├── repository/
-│   ├── UserRepository.java
-│   └── User.java
-├── service/
-│   ├── JwtService.java
-│   └── CustomUserDetailsService.java
-└── DbJwtAuthenticationApplication.java
-```
+### 🔐 3. Integration with Authentication Flow
+- When a user logs in:
+  - Issue both **access token (JWT)** + **refresh token**
+  - Save refresh token in DB
+- When access token expires:
+  - Client sends refresh token to `/api/auth/refresh`
+  - If valid → issue new access token
+
+---
+
+### 🌐 4. Security Config Updates
+- Updated `SecurityConfig` to allow `/api/auth/refresh` without authentication.
+- Ensured refresh token endpoint still validates token signature + expiry.
+
+---
+
+## 🧪 Testing
+- Used Postman to:
+  1. Login → receive access token + refresh token
+  2. Wait for access token expiry (15sec)
+  3. Call `/api/auth/refresh` with refresh token
+  4. Confirm receipt of a new valid access token
 
 ---
 
 ## 📝 Notes
-- Every request must now include `Authorization: Bearer <token>`.
-- No sessions, no redirects — this is pure API-style authentication.
-- Invalid tokens → `401 Unauthorized`.
-- Valid token but insufficient role → `403 Forbidden`.
+- Refresh tokens should be stored securely (e.g., HttpOnly cookies in production).
+- On logout, always invalidate the refresh token in the DB to prevent reuse.
+- For high-security apps, consider rotating refresh tokens every use.
 
 ---
 
@@ -82,4 +67,4 @@ week8-db-jwt-auth/
 📍 LinkedIn: [Theo Olalekan](https://www.linkedin.com/in/theoolalekan/)  
 📍 GitHub: [Spring With Theo](https://github.com/TheoLekan/SpringWithTheo)
 
-#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #JWT #LearningInPublic #BuildInPublic
+#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #JWT #RefreshToken
