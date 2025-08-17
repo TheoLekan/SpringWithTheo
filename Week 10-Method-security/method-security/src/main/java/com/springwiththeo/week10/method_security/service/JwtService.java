@@ -39,6 +39,16 @@ public class JwtService {
                 .compact();
     }
 
+    public String generateToken(long userId, String username, Collection<? extends GrantedAuthority> authorities) {
+        return Jwts.builder()
+                .setClaims(Map.of("roles",authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet())))
+                .setSubject(username)
+                .claim("id", userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationTimeMs))
+                .signWith(key)
+                .compact();
+    }
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
