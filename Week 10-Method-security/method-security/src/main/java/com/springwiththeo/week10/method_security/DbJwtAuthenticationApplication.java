@@ -37,7 +37,9 @@ public class DbJwtAuthenticationApplication {
 				user.setPassword(encoder.encode("user123"));
 				user.setRoles(Set.of("ROLE_USER"));
 
-				repository.saveAll(List.of(admin, user));
+				List<User> users = repository.saveAll(List.of(admin, user));
+				users.forEach(System.out::println);
+
 			}
 		};
 	}
