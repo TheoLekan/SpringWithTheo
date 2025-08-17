@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableMethodSecurity
 public class DbJwtAuthenticationApplication {
 
 	public static void main(String[] args) {
