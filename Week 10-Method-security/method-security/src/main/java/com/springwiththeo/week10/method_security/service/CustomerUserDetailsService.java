@@ -1,6 +1,7 @@
 package com.springwiththeo.week10.method_security.service;
 
 
+import com.springwiththeo.week10.method_security.model.CustomUserDetails;
 import com.springwiththeo.week10.method_security.repository.User;
 import com.springwiththeo.week10.method_security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,6 @@ public class CustomerUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(username)
-                .password(user.getPassword())
-                .authorities(user.getRoles().toArray(new String[0]))
-                .build();
+        return new CustomUserDetails(user);
     }
 }
