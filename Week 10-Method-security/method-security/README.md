@@ -1,70 +1,80 @@
-# 🔄 Week 9 – Implementing Refresh Tokens with Spring Security + JWT
+# 🔄 Week 10 – Fine-Grained Method Security with Spring Security
 
-This week, I built **refresh token support** into the authentication system so users can stay logged in without re-entering credentials while keeping sessions secure.
+This week, I implemented **method-level authorization** to tighten security rules and enforce business logic directly at the service and controller layer.
 
 ---
 
 ## 🎯 Goal
-In real-world apps, JWT access tokens should be short-lived for security, but logging in every 15 minutes is a terrible user experience.  
-The **refresh token pattern** solves this by issuing a second, longer-lived token that can request new access tokens without asking for the username/password again.
+Endpoint-level rules (`HttpSecurity`) are good, but too broad. In real-world apps, you often need **fine-grained control**:
+
+- A normal user should only be able to access **their own data**.
+- An admin should be able to access **any data**.
+
+Spring Security’s `@PreAuthorize` lets us express these rules declaratively, using Spring Expression Language (SpEL).
 
 ---
 
 ## ✅ What I Implemented
 
-### 🗄 1. Refresh Token Repository & Entity
-- Created a `RefreshToken` JPA entity with:
-  - `id` (UUID)
-  - `token` (securely generated string)
-  - `user` (relation to `User` entity)
-  - `expiryDate`
-- Added `RefreshTokenRepository` for CRUD operations.
+### 🔐 1. Enabled Method Security
+- Added `@EnableMethodSecurity` to the security configuration.
+- This unlocked annotation-based authorization support (`@PreAuthorize`, `@PostAuthorize`, etc.).
 
 ---
 
-### ⚙ 2. Refresh Token Service
-- Handles:
-  - Generating refresh tokens for users
-  - Validating token expiry
-  - Rotating (invalidating and issuing a new one)
-- Replaces old tokens to prevent reuse.
+### 👤 2. Custom Principal with `CustomUserDetails`
+- Created a `CustomUserDetails` class implementing `UserDetails`.
+- Extended the principal to carry both `username` and **user `id`** (required for ownership checks).
 
 ---
 
-### 🔐 3. Integration with Authentication Flow
-- When a user logs in:
-  - Issue both **access token (JWT)** + **refresh token**
-  - Save refresh token in DB
-- When access token expires:
-  - Client sends refresh token to `/api/auth/refresh`
-  - If valid → issue new access token
+### ⚙️ 3. JWT Service & Claims
+- Updated `JwtService` to include `id` and `roles` in JWT claims.
+- Added `extractId()` method to retrieve the `id` from tokens.
 
 ---
 
-### 🌐 4. Security Config Updates
-- Updated `SecurityConfig` to allow `/api/auth/refresh` without authentication.
-- Ensured refresh token endpoint still validates token signature + expiry.
+### 📜 4. JWT Filter Update
+- Modified the filter so that instead of setting the principal to just a `String username`,  
+  it rebuilds a full `CustomUserDetails` from JWT claims (id, username, roles).
+- This enabled SpEL expressions like `authentication.principal.id`.
+
+---
+
+### 🚪 5. Secured Endpoint with SpEL
+In `UserController`:
+
+```java
+@GetMapping("/{id}")
+@PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+public User getUserById(@PathVariable Long id) {
+    return userService.findById(id);
+}
+```
+- Users can only fetch their own record.
+- Admins can fetch any record.
 
 ---
 
 ## 🧪 Testing
-- Used Postman to:
-  1. Login → receive access token + refresh token
-  2. Wait for access token expiry (15sec)
-  3. Call `/api/auth/refresh` with refresh token
-  4. Confirm receipt of a new valid access token
+- Logged in as a **normal user** → could only call `/users/{theirId}`.
+- Tried `/users/{otherId}` → **forbidden**.
+- Logged in as **admin** → could access **any** user.
 
 ---
 
 ## 📝 Notes
-- Refresh tokens should be stored securely (e.g., HttpOnly cookies in production).
-- On logout, always invalidate the refresh token in the DB to prevent reuse.
-- For high-security apps, consider rotating refresh tokens every use.
+- `@PreAuthorize` brings business rules closer to the domain logic.
+- Always enrich the `principal` with fields your rules will need (like `id`).
+- JWT filters should rebuild the `principal` from claims to avoid unnecessary DB hits.
+- SpEL is powerful — but keep expressions **simple and maintainable**.
 
 ---
 
 ## 🔗 Follow the journey
-📍 LinkedIn: [Theo Olalekan](https://www.linkedin.com/in/theoolalekan/)  
-📍 GitHub: [Spring With Theo](https://github.com/TheoLekan/SpringWithTheo)
+📍 LinkedIn: Theo Olalekan  
+📍 GitHub: Spring With Theo
 
-#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #JWT #RefreshToken
+---
+
+#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #MethodSecurity  
