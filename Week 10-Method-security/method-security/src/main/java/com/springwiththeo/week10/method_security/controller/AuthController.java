@@ -3,6 +3,7 @@ package com.springwiththeo.week10.method_security.controller;
 
 import com.springwiththeo.week10.method_security.dto.RefreshRequest;
 import com.springwiththeo.week10.method_security.dto.TokenResponse;
+import com.springwiththeo.week10.method_security.model.CustomUserDetails;
 import com.springwiththeo.week10.method_security.repository.RefreshToken;
 import com.springwiththeo.week10.method_security.repository.User;
 import com.springwiththeo.week10.method_security.service.JwtService;
@@ -32,8 +33,9 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
+        CustomUserDetails userDetails=(CustomUserDetails)authenticate.getPrincipal();
         // Generate JWT token
-        String jwtToken = jwtService.generateToken(authenticate.getName(), authenticate.getAuthorities());
+        String jwtToken = jwtService.generateToken(userDetails.getId(),authenticate.getName(), authenticate.getAuthorities());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticate.getName());
         TokenResponse body = new TokenResponse(jwtToken, refreshToken.getToken(), "Bearer", 15);
         return ResponseEntity.ok(body);
@@ -48,7 +50,7 @@ public class AuthController {
         var authorities = user.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
 
         //create a new JWT token (stateless)
-        String newToken = jwtService.generateToken(user.getUsername(), authorities);
+        String newToken = jwtService.generateToken(user.getId(),user.getUsername(), authorities);
 
         //rotate the refresh token (stateful)
         RefreshToken newRefreshToken = refreshTokenService.tokenRotation(validRefreshToken);
