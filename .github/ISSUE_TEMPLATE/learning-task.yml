@@ -15,6 +15,11 @@ body:
       description: Why are we doing this? What problem does this solve?
       placeholder: e.g., We want to avoid DB lookups on every request by embedding roles into JWT.
   - type: textarea
+    id: task
+    attributes:
+      label: What to do
+      description: steps to create complete the issue
+  - type: textarea
     id: acceptance
     attributes:
       label: Acceptance Criteria
