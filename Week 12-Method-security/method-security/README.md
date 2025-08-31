@@ -1,73 +1,101 @@
-# 🔄 Week 10 – Fine-Grained Method Security with Spring Security
+# 🔄 Week 12 – Exploring Method Security Annotations
 
-This week, I implemented **method-level authorization** to tighten security rules and enforce business logic directly at the service and controller layer.
+This week, I expanded on method-level authorization in Spring Security beyond `@PreAuthorize`.  
+I learned and implemented three additional annotations that allow for more flexible and fine-grained access control:
+- `@PostAuthorize`
+- `@PreFilter`
+- `@PostFilter`
 
 ---
 
 ## 🎯 Goal
-Endpoint-level rules (`HttpSecurity`) are good, but too broad. In real-world apps, you often need **fine-grained control**:
+While `@PreAuthorize` lets us decide *before* a method runs whether a user is allowed to execute it, real-world cases often require more nuance:
+- Sometimes we must inspect the **returned object** before granting access.
+- Sometimes we must filter a **list of inputs** before a method executes.
+- Sometimes we must filter a **list of outputs** after a method executes.
 
-- A normal user should only be able to access **their own data**.
-- An admin should be able to access **any data**.
-
-Spring Security’s `@PreAuthorize` lets us express these rules declaratively, using Spring Expression Language (SpEL).
+Spring Security provides `@PostAuthorize`, `@PreFilter`, and `@PostFilter` for these use cases.
 
 ---
 
 ## ✅ What I Implemented
 
-### 🔐 1. Enabled Method Security
-- Added `@EnableMethodSecurity` to the security configuration.
-- This unlocked annotation-based authorization support (`@PreAuthorize`, `@PostAuthorize`, etc.).
+### 🔐 1. `@PostAuthorize`
+- Secures a method **after it executes**, checking authorization based on the returned object.
 
----
-
-### 👤 2. Custom Principal with `CustomUserDetails`
-- Created a `CustomUserDetails` class implementing `UserDetails`.
-- Extended the principal to carry both `username` and **user `id`** (required for ownership checks).
-
----
-
-### ⚙️ 3. JWT Service & Claims
-- Updated `JwtService` to include `id` and `roles` in JWT claims.
-- Added `extractId()` method to retrieve the `id` from tokens.
-
----
-
-### 📜 4. JWT Filter Update
-- Modified the filter so that instead of setting the principal to just a `String username`,  
-  it rebuilds a full `CustomUserDetails` from JWT claims (id, username, roles).
-- This enabled SpEL expressions like `authentication.principal.id`.
-
----
-
-### 🚪 5. Secured Endpoint with SpEL
-In `UserController`:
+**Example:**
 
 ```java
 @GetMapping("/{id}")
-@PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
-public User getUserById(@PathVariable Long id) {
-    return userService.findById(id);
+@PostAuthorize("returnObject.ownerId() == authentication.principal.id or hasRole('ADMIN')")
+public Report getReport(@PathVariable Long id) {
+    return new Report(id, 100L, "User 100's Report");
 }
 ```
-- Users can only fetch their own record.
-- Admins can fetch any record.
+
+✅ Users can only fetch their own reports.  
+✅ Admins can fetch any report.
+
+---
+
+### 👥 2. `@PreFilter`
+- Filters **input collections** before the method executes.
+- Useful for batch operations where the client submits a list of IDs.
+
+**Example:**
+
+```java
+@PostMapping("/batch")
+@PreFilter("filterObject == authentication.principal.id or hasRole('ADMIN')")
+public List<Long> processUsers(@RequestBody List<Long> userIds) {
+    return userIds; // already filtered by Spring Security
+}
+```
+
+✅ A normal user only passes their own ID.  
+✅ Admins pass all IDs.
+
+---
+
+### 📜 3. `@PostFilter`
+- Filters **output collections** after the method executes.
+- Ensures users only see what they are authorized to.
+
+**Example:**
+
+```java
+@GetMapping
+@PostFilter("filterObject.ownerId() == authentication.principal.id or hasRole('ADMIN')")
+public List<Report> getAllReports() {
+    return List.of(
+        new Report(1L, 100L, "User 100's Report"),
+        new Report(2L, 200L, "User 200's Report"),
+        new Report(3L, 100L, "Another report for User 100")
+    );
+}
+```
+
+✅ Users only see their own reports.  
+✅ Admins see all reports.
 
 ---
 
 ## 🧪 Testing
-- Logged in as a **normal user** → could only call `/users/{theirId}`.
-- Tried `/users/{otherId}` → **forbidden**.
-- Logged in as **admin** → could access **any** user.
+- Logged in as **User 100**:
+    - `/reports/1` → accessible.
+    - `/reports/2` → forbidden.
+    - `/users/batch` with `[100,200,300]` → returns `[100]`.
+    - `/reports` → returns only reports owned by user 100.
+
+- Logged in as **Admin**:
+    - All endpoints return all data.
 
 ---
 
 ## 📝 Notes
-- `@PreAuthorize` brings business rules closer to the domain logic.
-- Always enrich the `principal` with fields your rules will need (like `id`).
-- JWT filters should rebuild the `principal` from claims to avoid unnecessary DB hits.
-- SpEL is powerful — but keep expressions **simple and maintainable**.
+- Records work great as DTOs in Spring. Remember to use accessor names in SpEL (e.g., `ownerId()` instead of `ownerId`).
+- `filterObject` is the keyword used inside `@PreFilter` and `@PostFilter` to represent each item in the collection.
+- `@PostAuthorize` is powerful, but you should avoid heavy queries before a 403 is thrown — better for read-heavy situations.
 
 ---
 
@@ -77,4 +105,4 @@ public User getUserById(@PathVariable Long id) {
 
 ---
 
-#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #MethodSecurity  
+#SpringWithTheo #NoPostNoPeace #Java #SpringBoot #SpringSecurity #MethodSecurity #LearningInPublic  
