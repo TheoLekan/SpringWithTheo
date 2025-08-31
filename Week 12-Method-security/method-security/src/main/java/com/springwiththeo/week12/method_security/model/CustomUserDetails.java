@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
    private final Set<GrantedAuthority> authorities;
 
    public CustomUserDetails(User user) {
-      this.id= user.getId();
+        this.id= user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         authorities=user.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
