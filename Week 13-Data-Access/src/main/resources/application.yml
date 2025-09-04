@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: Spring Data Access Project
+
+
+  datasource:
+    url: jdbc:h2:mem:week13db
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update   # auto-create tables from entities
+    show-sql: true        # log SQL to console
+  h2:
+    console:
+      enabled: true
