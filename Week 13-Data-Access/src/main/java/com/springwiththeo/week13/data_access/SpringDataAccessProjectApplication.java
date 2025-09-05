@@ -7,6 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @SpringBootApplication
 public class SpringDataAccessProjectApplication {
 
@@ -18,9 +21,16 @@ public class SpringDataAccessProjectApplication {
     CommandLineRunner init(BookRepository bookRepository) {
         return args -> {
             // Initialize the database with some books if needed
-            bookRepository.save(new Book("1984", "George Orwell"));
-            bookRepository.save(new Book("To Kill a Mockingbird", "Harper Lee"));
-            bookRepository.findAll().forEach(book->System.out.print(book.getTitle()+" by "+book.getAuthor()+"\n"));
+            bookRepository.save(new Book("Effective Java", "Joshua Bloch"));
+            bookRepository.save(new Book("Clean Code", "Robert C. Martin"));
+            bookRepository.save(new Book("Clean Architecture", "Robert C. Martin"));
+
+            List<Book> uncleBobBooks = bookRepository.findByAuthor("Robert C. Martin");
+            uncleBobBooks.forEach(b -> System.out.println("By Uncle Bob: " + b.getTitle()));
+
+            // derived query: find by title
+            Book cleanCode = bookRepository.findByTitle("Clean Code").orElseThrow(() -> new NoSuchElementException("Clean Code not found"));
+            System.out.println("Found: " + cleanCode.getTitle() + " by " + cleanCode.getAuthor());
         };
     }
 }
