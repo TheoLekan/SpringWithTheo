@@ -37,6 +37,10 @@ public class SpringDataAccessProjectApplication {
             List<Book> cleanBooks = bookRepository.searchByTitle("Clean");
             cleanBooks.forEach(b -> System.out.println("Found with JPQL: " + b.getTitle()));
 
+            //Scalar Projection (Single Column)
+            List<String> titlesOnlyByAuthor = bookRepository.findTitlesByAuthor("Robert C. Martin");
+            System.out.println("\n-------\nScalar Projection (Single Column) of Books by Robert C. Martin:");
+            titlesOnlyByAuthor.forEach(System.out::println);
 
         };
     }
