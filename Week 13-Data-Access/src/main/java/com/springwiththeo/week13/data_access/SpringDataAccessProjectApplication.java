@@ -1,6 +1,8 @@
 package com.springwiththeo.week13.data_access;
 
+import com.springwiththeo.week13.data_access.model.Author;
 import com.springwiththeo.week13.data_access.model.Book;
+import com.springwiththeo.week13.data_access.repo.AuthorRepository;
 import com.springwiththeo.week13.data_access.repo.BookRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,19 +20,24 @@ public class SpringDataAccessProjectApplication {
 	}
 
     @Bean
-    CommandLineRunner init(BookRepository bookRepository) {
+    CommandLineRunner init(BookRepository bookRepository, AuthorRepository authorRepo) {
         return args -> {
+            Author uncleBob = authorRepo.save(new Author("Robert C. Martin"));
+            Author bloch = authorRepo.save(new Author("Joshua Bloch"));
             // Initialize the database with some books if needed
-            bookRepository.save(new Book("Effective Java", "Joshua Bloch"));
-            bookRepository.save(new Book("Clean Code", "Robert C. Martin"));
-            bookRepository.save(new Book("Clean Architecture", "Robert C. Martin"));
-
-            List<Book> uncleBobBooks = bookRepository.findByAuthor("Robert C. Martin");
-            uncleBobBooks.forEach(b -> System.out.println("By Uncle Bob: " + b.getTitle()));
+            bookRepository.save(new Book("Effective Java", uncleBob));
+            bookRepository.save(new Book("Clean Code", uncleBob));
+            bookRepository.save(new Book("Clean Architecture", bloch));
 
             // derived query: find by title
             Book cleanCode = bookRepository.findByTitle("Clean Code").orElseThrow(() -> new NoSuchElementException("Clean Code not found"));
-            System.out.println("Found: " + cleanCode.getTitle() + " by " + cleanCode.getAuthor());
+            System.out.println("Found: " + cleanCode.getTitle() + " by " + cleanCode.getAuthor().getName());
+
+            // JPQL search
+            List<Book> cleanBooks = bookRepository.searchByTitle("Clean");
+            cleanBooks.forEach(b -> System.out.println("Found with JPQL: " + b.getTitle()));
+
+
         };
     }
 }
