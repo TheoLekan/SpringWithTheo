@@ -1,6 +1,7 @@
 package com.springwiththeo.week13.data_access.repo;
 
 import com.springwiththeo.week13.data_access.dto.BookSummary;
+import com.springwiththeo.week13.data_access.dto.BookView;
 import com.springwiththeo.week13.data_access.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query("Select new com.springwiththeo.week13.data_access.dto.BookSummary(b.title, b.author.name) FROM Book b WHERE b.author.name = :author")
     List<BookSummary> findBookSummariesByAuthor(@Param("author") String author);
+
+    //projection interface
+    // use _ to navigate nested properties
+    List<BookView> findByAuthor_Name(String author);
 }
