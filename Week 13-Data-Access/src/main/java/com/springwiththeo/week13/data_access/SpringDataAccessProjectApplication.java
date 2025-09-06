@@ -1,5 +1,6 @@
 package com.springwiththeo.week13.data_access;
 
+import com.springwiththeo.week13.data_access.dto.BookSummary;
 import com.springwiththeo.week13.data_access.model.Author;
 import com.springwiththeo.week13.data_access.model.Book;
 import com.springwiththeo.week13.data_access.repo.AuthorRepository;
@@ -41,6 +42,11 @@ public class SpringDataAccessProjectApplication {
             List<String> titlesOnlyByAuthor = bookRepository.findTitlesByAuthor("Robert C. Martin");
             System.out.println("\n-------\nScalar Projection (Single Column) of Books by Robert C. Martin:");
             titlesOnlyByAuthor.forEach(System.out::println);
+
+            //Projection using DTO (Multiple Columns)
+            List<BookSummary> bookSummariesByAuthor = bookRepository.findBookSummariesByAuthor("Robert C. Martin");
+            System.out.println("\n-------\nProjection using DTO (Multiple Columns) of Books by Robert C. Martin:");
+            bookSummariesByAuthor.forEach(bs -> System.out.println(bs.title() + " by " + bs.authorName()));
 
         };
     }
