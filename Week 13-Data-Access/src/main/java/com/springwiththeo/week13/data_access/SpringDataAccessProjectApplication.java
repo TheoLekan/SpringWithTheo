@@ -3,14 +3,8 @@ package com.springwiththeo.week13.data_access;
 import com.springwiththeo.week13.data_access.dto.BookSummary;
 import com.springwiththeo.week13.data_access.dto.BookView;
 import com.springwiththeo.week13.data_access.dto.BookViewNested;
-import com.springwiththeo.week13.data_access.model.Author;
-import com.springwiththeo.week13.data_access.model.Book;
-import com.springwiththeo.week13.data_access.model.Profile;
-import com.springwiththeo.week13.data_access.model.User;
-import com.springwiththeo.week13.data_access.repo.AuthorRepository;
-import com.springwiththeo.week13.data_access.repo.BookRepository;
-import com.springwiththeo.week13.data_access.repo.ProfileRepository;
-import com.springwiththeo.week13.data_access.repo.UserRepository;
+import com.springwiththeo.week13.data_access.model.*;
+import com.springwiththeo.week13.data_access.repo.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,9 +16,9 @@ import java.util.NoSuchElementException;
 @SpringBootApplication
 public class SpringDataAccessProjectApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringDataAccessProjectApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SpringDataAccessProjectApplication.class, args);
+    }
 
     //@Bean
     CommandLineRunner init(BookRepository bookRepository, AuthorRepository authorRepo) {
@@ -99,7 +93,7 @@ public class SpringDataAccessProjectApplication {
         };
     }
 
-    @Bean
+    //@Bean
     CommandLineRunner oneToOneRelationshipExampleTests(UserRepository userRepository, ProfileRepository profileRepository) {
         return args -> {
             //Create User and Profile
@@ -114,4 +108,22 @@ public class SpringDataAccessProjectApplication {
         };
     }
 
+    @Bean
+    CommandLineRunner manyToManyRelationshipExampleTests(StudentRepository studentRepository, CourseRepository courseRepository) {
+        return args -> {
+            //Create Students
+            Student st1 = new Student("Alice");
+
+            Course course1 = new Course("Mathematics");
+            Course course2 = new Course("History");
+
+            st1.enroll(course1, course2);
+
+            Student savedStudent = studentRepository.save(st1);
+
+            savedStudent.getCourses().forEach(c -> System.out.println(savedStudent.getName() + " is enrolled in " + c.getName()));
+
+
+        };
+    }
 }
