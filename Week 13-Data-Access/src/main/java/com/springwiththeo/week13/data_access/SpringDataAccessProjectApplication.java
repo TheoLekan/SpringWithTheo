@@ -2,6 +2,7 @@ package com.springwiththeo.week13.data_access;
 
 import com.springwiththeo.week13.data_access.dto.BookSummary;
 import com.springwiththeo.week13.data_access.dto.BookView;
+import com.springwiththeo.week13.data_access.dto.BookViewNested;
 import com.springwiththeo.week13.data_access.model.Author;
 import com.springwiththeo.week13.data_access.model.Book;
 import com.springwiththeo.week13.data_access.repo.AuthorRepository;
@@ -55,6 +56,13 @@ public class SpringDataAccessProjectApplication {
             System.out.println("\n-------\nInterface-based Projection of Books by Robert C. Martin:");
 
             booksByAuthor.forEach(bv -> System.out.println(bv.getTitle() + " by " + bv.getAuthorId() + " - " + bv.getAuthorName() + " - Full Author Obj: " + bv.getAuthor()));
+
+            // Nested Projection
+            List<BookViewNested> byAuthorName = bookRepository.findByAuthorName("Robert C. Martin");
+            System.out.println("\n-------\nNested Projection of Books by Robert C. Martin:");
+            byAuthorName.forEach(bvn -> System.out.println(bvn.getTitle() + " by " + bvn.getAuthor().getId() + " - " + bvn.getAuthor().getName()));
         };
+
+
     }
 }
