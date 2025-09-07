@@ -22,7 +22,7 @@ public class SpringDataAccessProjectApplication {
 		SpringApplication.run(SpringDataAccessProjectApplication.class, args);
 	}
 
-    @Bean
+    //@Bean
     CommandLineRunner init(BookRepository bookRepository, AuthorRepository authorRepo) {
         return args -> {
             Author uncleBob = authorRepo.save(new Author("Robert C. Martin"));
@@ -64,5 +64,34 @@ public class SpringDataAccessProjectApplication {
         };
 
 
+    }
+
+    @Bean
+    CommandLineRunner oneToManyRelationshipExampleTests(AuthorRepository authorRepository, BookRepository bookRepository) {
+        return args -> {
+
+            Author author = new Author("Theo");//create author
+            Book book1 = new Book("SpringWithTheo Volume 1");
+            Book book2 = new Book("SpringWithTheo Volume 2");
+            author.addBook(book1, book2); //associate books with author
+            authorRepository.save(author);//save author (cascade saves books too)
+            authorRepository.findAll().forEach(a -> {
+                System.out.println(a.getName() + " has written:");
+                a.getBooks().forEach(b -> System.out.println(" - " + b.getTitle()));
+            });
+            // Also works the same as the above because Spring populates the in memory objects
+            //Notice it the Id's are populated too through the save operation spring took the object and populated the id's
+            System.out.println(author.getName() + " " + author.getId() + " has written:");
+            author.getBooks().forEach(b -> System.out.println(b.getId() + " - " + b.getTitle()));
+
+            //removing a book from the author
+            author.removeBook(book1);
+            authorRepository.save(author);//save author (orphan removal removes book1 too)
+            System.out.println("After removing book1:");
+            authorRepository.findAll().forEach(a -> {
+                System.out.println(a.getName() + " has written:");
+                a.getBooks().forEach(b -> System.out.println(" - " + b.getTitle()));
+            });
+        };
     }
 }
