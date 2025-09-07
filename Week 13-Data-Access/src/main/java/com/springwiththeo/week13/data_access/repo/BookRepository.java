@@ -2,6 +2,7 @@ package com.springwiththeo.week13.data_access.repo;
 
 import com.springwiththeo.week13.data_access.dto.BookSummary;
 import com.springwiththeo.week13.data_access.dto.BookView;
+import com.springwiththeo.week13.data_access.dto.BookViewNested;
 import com.springwiththeo.week13.data_access.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     //projection interface
     // use _ to navigate nested properties
     List<BookView> findByAuthor_Name(String author);
+
+    @Query("SELECT b FROM Book b WHERE b.author.name = :authorName")
+    List<BookViewNested> findByAuthorName(@Param("authorName") String authorName);
 }
