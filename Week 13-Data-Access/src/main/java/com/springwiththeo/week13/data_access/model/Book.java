@@ -15,8 +15,12 @@ public class Book {
     private String title;
 
 
-    @Getter(onMethod_ = @ManyToOne)
+    @Getter(onMethod_ = {@ManyToOne, @JoinColumn(name = "author_id")})
     private Author author;
+
+    public Book(String title) {
+        this.title = title;
+    }
 
     public Book(String title, Author author) {
         this.title = title;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,22 @@ public class Author {
         this.name = name;
     }
 
-    @Getter(onMethod_ = @OneToMany(mappedBy = "author"))
-    List<Book> books;
+    @Getter(onMethod_ = {@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)})
+    List<Book> books = new ArrayList<>();
+
+    public void addBook(Book... book) {
+        for (Book b : book) {
+            b.setAuthor(this);
+            books.add(b);
+        }
+
+
+    }
+
+    public void removeBook(Book book) {
+        books.remove(book);
+        book.setAuthor(null);
+
+    }
+
 }
