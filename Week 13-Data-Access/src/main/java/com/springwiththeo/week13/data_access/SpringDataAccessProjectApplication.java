@@ -5,8 +5,12 @@ import com.springwiththeo.week13.data_access.dto.BookView;
 import com.springwiththeo.week13.data_access.dto.BookViewNested;
 import com.springwiththeo.week13.data_access.model.Author;
 import com.springwiththeo.week13.data_access.model.Book;
+import com.springwiththeo.week13.data_access.model.Profile;
+import com.springwiththeo.week13.data_access.model.User;
 import com.springwiththeo.week13.data_access.repo.AuthorRepository;
 import com.springwiththeo.week13.data_access.repo.BookRepository;
+import com.springwiththeo.week13.data_access.repo.ProfileRepository;
+import com.springwiththeo.week13.data_access.repo.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -66,7 +70,7 @@ public class SpringDataAccessProjectApplication {
 
     }
 
-    @Bean
+    // @Bean
     CommandLineRunner oneToManyRelationshipExampleTests(AuthorRepository authorRepository, BookRepository bookRepository) {
         return args -> {
 
@@ -94,4 +98,20 @@ public class SpringDataAccessProjectApplication {
             });
         };
     }
+
+    @Bean
+    CommandLineRunner oneToOneRelationshipExampleTests(UserRepository userRepository, ProfileRepository profileRepository) {
+        return args -> {
+            //Create User and Profile
+            Profile profile = new Profile("Spring Enthusiast", "https://github.com/TheoLekan/SpringWithTheo");
+            User user = new User("TheoLekan");
+            user.setProfile(profile);
+            userRepository.save(user);//saves user and profile because of CascadeType.ALL
+
+            //Fetch User and Profile
+            User fetchedUser = userRepository.findById(user.getId()).orElseThrow(() -> new NoSuchElementException("User not found"));
+            System.out.println("User: " + fetchedUser.getUsername() + ", Profile Bio: " + fetchedUser.getProfile().getBio() + ", Profile Website: " + fetchedUser.getProfile().getWebsite());
+        };
+    }
+
 }
