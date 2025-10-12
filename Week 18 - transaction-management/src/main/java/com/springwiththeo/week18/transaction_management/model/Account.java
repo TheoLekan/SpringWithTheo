@@ -12,8 +12,8 @@ public class Account {
     private String owner;
     private double balance;
 
-    @Version
-    private Integer version;
+//    @Version
+//    private Integer version;
 
     public Account(String owner, double balance) {
         this.owner = owner;

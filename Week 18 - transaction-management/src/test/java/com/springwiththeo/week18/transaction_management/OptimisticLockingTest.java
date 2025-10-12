@@ -31,6 +31,6 @@ public class OptimisticLockingTest {
         thread1.join(); thread2.join();
         Account finalState = accountRepo.findById(johnDoe.getId()).get();
         System.out.println("Final balance = " + finalState.getBalance());
-        System.out.println("Final version = " + finalState.getVersion());
+       // System.out.println("Final version = " + finalState.getVersion());
     }
 }
