@@ -1,9 +1,6 @@
 package com.springwiththeo.week18.transaction_management.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +11,9 @@ public class Account {
     private Long id;
     private String owner;
     private double balance;
+
+    @Version
+    private Integer version;
 
     public Account(String owner, double balance) {
         this.owner = owner;
